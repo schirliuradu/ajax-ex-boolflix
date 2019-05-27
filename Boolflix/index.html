@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body>
+    
+    <div class="container">
+
+        <header class="header">
+            <div class="header__left">
+                <span class="header__logo">boolflix</span>    
+            </div>
+            <div class="header__right">
+                <input type="text" class="header__input"> 
+                <button class="btn header__search">Cerca</button>
+            </div>
+        </header> 
+
+        <div class="content"></div>
+
+        <footer class="footer">
+            <span class="footer__copy">
+                &copy; Designed by Radu Schirliu 
+            </span>
+        </footer>
+
+    </div>
+
+
+    <!-- handlebars templates -->
+
+    <script id="movie-template" type="text/x-handlebars-template"> 
+
+        <div class="movie">
+            <h2 class="movie__title"> {{ title }} </h2>
+            <div class="movie__details">
+                <div class="movie__property">
+                    <span>Original title: </span> 
+                    <span class="movie__property--value"> {{originalTitle}} </span>                
+                </div>
+                <div class="movie__property">
+                    <span>Original language: </span>
+                    <span class="movie__property--value"> {{ originalLanguage }} </span>
+                </div>
+                <div class="movie__property">
+                    <span>Voto: </span>
+                    <span class="movie__property--value"> {{ vote }} </span>
+                </div>
+            </div>
+        </div> 
+
+    </script>
+
+    <!-- -------------------- -->
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.2/handlebars.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
