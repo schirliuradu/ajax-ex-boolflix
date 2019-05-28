@@ -4,7 +4,7 @@ $(document).ready(function() {
 
     $('.header__search').click(function() {
 
-        getMovies( getInputValue() ); 
+        getItems( getInputValue() ); 
         cleanInputField(); 
 
     }); 
@@ -12,7 +12,7 @@ $(document).ready(function() {
     $('.header__input').keyup(function( e ) {
 
         if ( e.which === 13 ) {
-            getMovies( getInputValue() ); 
+            getItems( getInputValue() ); 
             cleanInputField();         
         }
 
@@ -43,11 +43,14 @@ function cleanInputField() {
     $('.content').empty(); 
 }
 
+
+
+
 // ajax call for movies 
-function getMovies( q ) {
+function getItems( q ) {
     var chiave = '1c72c8fa9e2142b6517ecec927e56964'; 
     $.ajax({
-        url: 'https://api.themoviedb.org/3/search/movie?api_key=' + chiave + '&language=language&query=query', 
+        url: 'https://api.themoviedb.org/3/search/multi?api_key=' + chiave + '&language=language&page=1&query=q', 
         method: 'GET', 
         data: { 
             query: q,     // l'anno lo metto come valore fisso, tanto non ci interessa considerarne altri 
@@ -55,7 +58,7 @@ function getMovies( q ) {
         }, 
         success: function( data ) { 
     
-            manageQueriedMovies( data ); 
+            manageQueriedItems( data ); 
     
         }, 
         error: function( error ) { 
@@ -69,13 +72,14 @@ function getMovies( q ) {
     });
 }
 
-// funzione che decide cosa fare nel caso in cui ci sono risultati della ricerca oppure no 
-function manageQueriedMovies( obj ) {
-    var movies = obj.results;
 
-    if ( movies.length !== 0 ) {
-        for ( var i = 0; i < movies.length; i++ ) {
-            displayQueriedMovies( movies, i ); 
+// funzione che decide cosa fare nel caso in cui ci sono risultati della ricerca oppure no 
+function manageQueriedItems( obj ) {
+    var results = obj.results;
+
+    if ( results.length !== 0 ) {
+        for ( var i = 0; i < results.length; i++ ) {
+            displayQueriedItems( results, i ); 
         }
     } else {
         displayAlternativeMessage(); 
@@ -87,8 +91,8 @@ function renderStars( n ) {
     var stars, emptyStar, fullStar, i;
 
     stars = ''; 
-    emptyStar = '<i class="far fa-star" data-index="1"></i>'; 
-    fullStar  = '<i class="fas fa-star" data-index="1"></i>';
+    emptyStar = '<i class="far fa-star"></i>'; 
+    fullStar  = '<i class="fas fa-star"></i>';
     i = 1; 
 
     while ( i <= 5 ) {
@@ -100,23 +104,34 @@ function renderStars( n ) {
 }
 
 // funzione che mostra a video i risultati della ricerca 
-function displayQueriedMovies( arr, index ) {
-    var starsNumber, source, movie, parameters, result;
+function displayQueriedItems( arr, index ) {
+    var typeOfSelectedItem, titleName, originalTitleName, starsNumber, source, item, parameters, result;
 
     setContentToGrid(); 
 
+    // gestisco alcuni campi diversi nell'oggetto di ritorno, nel caso di TV e Movies
+    typeOfSelectedItem = arr[ index ].media_type;
+    if ( typeOfSelectedItem === 'tv' ) {
+        titleName = arr[ index ].name;
+        originalTitleName = arr[ index ].original_name;
+    } else {
+        titleName = arr[ index ].title; 
+        originalTitleName = arr[ index ].original_title; 
+    }
+
     starsNumber = starsCalculator(arr[ index ].vote_average); 
-    source = $("#movie-template").html();
-    movie = Handlebars.compile(source); 
+    source = $("#item-template").html();
+    item = Handlebars.compile(source); 
 
     parameters = {
-        title: arr[ index ].title, 
-        originalTitle: arr[ index ].original_title, 
+        type: typeOfSelectedItem,
+        title: titleName, 
+        originalTitle: originalTitleName, 
         originalLanguage: flagSwitcher( arr[ index ].original_language ), 
         rating: renderStars( starsNumber )
     };  
 
-    result = movie(parameters); 
+    result = item(parameters); 
     $('.content').append(result); 
 }
 
@@ -144,7 +159,7 @@ function starsCalculator( num ) {
 
 } 
 
-
+// funzione che decide quale flag mostrare in base alla lingua originale ricevuta in input 
 function flagSwitcher( lang ) {
     var result; 
 
@@ -155,7 +170,7 @@ function flagSwitcher( lang ) {
         case 'es':
         case 'fr':
         case 'de':
-            result = '<img class="movie__flag-img" src="./flags/' + lang + '.png">';
+            result = '<img class="item__flag-img" src="./flags/' + lang + '.png">';
             break;
         default:
             result = lang; 
@@ -163,3 +178,4 @@ function flagSwitcher( lang ) {
     }
     return result; 
 }
+

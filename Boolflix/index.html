@@ -32,24 +32,24 @@
 
     </div>
 
-
     <!-- handlebars templates -->
 
-    <script id="movie-template" type="text/x-handlebars-template"> 
+    <script id="item-template" type="text/x-handlebars-template"> 
 
-        <div class="movie">
-            <h2 class="movie__title"> {{ title }} </h2>
-            <div class="movie__details">
-                <div class="movie__property">
+        <div class="item">
+            <span class="item__type">{{type}}</span>
+            <h2 class="item__title"> {{ title }} </h2>
+            <div class="item__details">
+                <div class="item__property">
                     <span>Original title: </span> 
-                    <span class="movie__property--value"> {{originalTitle}} </span>                
+                    <span class="item__property--value"> {{originalTitle}} </span>                
                 </div>
-                <div class="movie__property movie__property--flex">
+                <div class="item__property item__property--flex">
                     <span>Original language: </span>
-                    <span class="movie__property--value-flag"> {{{originalLanguage}}} </span>
+                    <span class="item__property--value-flag"> {{{originalLanguage}}} </span>
                 </div>
-                <div class="movie__property">
-                    <span class="movie__stars">{{{rating}}}</span>
+                <div class="item__property">
+                    <span class="item__stars">{{{rating}}}</span>
                 </div>
             </div>
         </div> 
