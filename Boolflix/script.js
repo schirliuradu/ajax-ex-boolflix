@@ -37,6 +37,8 @@ function getInputValue() {
 // funzione che ripulisce l'input dalla stringa digitata e svuota il contenitore dalla precedente ricerca 
 function cleanInputField() {
     $('.header__input').val(''); 
+    // toglie il focus dall'input 
+    $('.header__input').blur(); 
     // also cleaning the container from previous research
     $('.content').empty(); 
 }
@@ -72,48 +74,56 @@ function manageQueriedMovies( obj ) {
     var movies = obj.results;
 
     if ( movies.length !== 0 ) {
-
-        setContentToGrid(); 
         for ( var i = 0; i < movies.length; i++ ) {
-
             displayQueriedMovies( movies, i ); 
-
         }
-
     } else {
-
-        setContentToFlex(); 
-        // make new handlebare  template for the visualization of nothing (a string in all the entire page)
         displayAlternativeMessage(); 
-
     }
-
 }
 
+// funzione che, dato il numero di stelle in input stampa quel numero di stelle piene, e, se il numero è minore di 5, le altre le stampa vuote 
+function renderStars( n ) {
+    var stars, emptyStar, fullStar, i;
+
+    stars = ''; 
+    emptyStar = '<i class="far fa-star" data-index="1"></i>'; 
+    fullStar  = '<i class="fas fa-star" data-index="1"></i>';
+    i = 1; 
+
+    while ( i <= 5 ) {
+        i <= n ? stars += fullStar : stars += emptyStar; 
+        i++; 
+    }
+
+    return stars; 
+}
 
 // funzione che mostra a video i risultati della ricerca 
 function displayQueriedMovies( arr, index ) {
+    var starsNumber, source, movie, parameters, result;
 
-    var source = $("#movie-template").html();
-    var movie = Handlebars.compile(source);
+    setContentToGrid(); 
 
-    var parameters = {
+    starsNumber = starsCalculator(arr[ index ].vote_average); 
+    source = $("#movie-template").html();
+    movie = Handlebars.compile(source); 
+
+    parameters = {
         title: arr[ index ].title, 
         originalTitle: arr[ index ].original_title, 
-        originalLanguage: arr[ index ].original_language,
-        vote: arr[ index ].vote_average
-    };
+        originalLanguage: flagSwitcher( arr[ index ].original_language ), 
+        rating: renderStars( starsNumber )
+    };  
 
-    var result = movie(parameters);
-
+    result = movie(parameters); 
     $('.content').append(result); 
-
 }
-
 
 // funzione che mostra a video la mancanza di match nella ricerca 
 function displayAlternativeMessage() { 
     var string = 'Non ci sono film per la ricerca eseguita. Cerca un\'altra parola chiave del titolo!'; 
+    setContentToFlex(); 
     $('.content').append('<p class="result">' + string + '</p>'); 
 }
 
@@ -125,4 +135,31 @@ function setContentToFlex() {
 // altrimenti lo setta come flex, per levare la griglia e centrare la stringa 
 function setContentToGrid() {
     $('.content').removeClass('content--flex').addClass('content--grid'); 
+}
+
+// funzione che divide e arrotonda il voto con eccesso per decidere il numero di stelle da renderizzare 
+function starsCalculator( num ) {
+
+    return Math.ceil( num/2 ); 
+
+} 
+
+
+function flagSwitcher( lang ) {
+    var result; 
+
+    switch( lang ) {
+        case 'it':
+        case 'en':
+        case 'pt':
+        case 'es':
+        case 'fr':
+        case 'de':
+            result = '<img class="movie__flag-img" src="./flags/' + lang + '.png">';
+            break;
+        default:
+            result = lang; 
+            break;
+    }
+    return result; 
 }

@@ -155,6 +155,12 @@ body {
     width: 100%; 
 }
 
+.movie__property--flex {
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+}
+
 .movie__property:not(:last-child) {
     margin-bottom: 1rem; 
 }
@@ -164,6 +170,38 @@ body {
     letter-spacing: 1px; 
     color: #ddd; 
     line-height: 1.4; 
+} 
+
+.movie__property--value-flag {
+    font-size: 3rem; 
+    line-height: .8; 
+    color: #ddd; 
+    margin-top: 2rem; 
+    text-transform: uppercase; 
+    background-color: black; 
+    border: 1px solid white; 
+    padding: 1rem; 
+}
+
+.movie__stars { 
+    display: inline-block; 
+    margin-top: 1.5rem; 
+}
+
+.movie__stars i { 
+    font-size: 2rem; 
+    color: #ee0; 
+    cursor: pointer; 
+}
+
+.movie__stars i:not(:last-child) {
+    margin-right: .3rem; 
+}
+
+.movie__flag-img { 
+    display: block; 
+    width: 5rem; 
+    text-align: center; 
 }
 
 /* ---------------------- */
