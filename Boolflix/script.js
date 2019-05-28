@@ -105,7 +105,7 @@ function renderStars( n ) {
 
 // funzione che mostra a video i risultati della ricerca 
 function displayQueriedItems( arr, index ) {
-    var typeOfSelectedItem, titleName, originalTitleName, starsNumber, source, item, parameters, result;
+    var posterDim, posterUrl, typeOfSelectedItem, titleName, originalTitleName, starsNumber, source, item, parameters, result;
 
     setContentToGrid(); 
 
@@ -119,11 +119,25 @@ function displayQueriedItems( arr, index ) {
         originalTitleName = arr[ index ].original_title; 
     }
 
+
+    posterDim = 'w342'; 
+    posterUrl = arr[ index ].poster_path; 
+
+    if ( arr[ index ].poster_path === 'null' ) {
+        posterDim = 'w300'; 
+        posterUrl = arr[ index ].backdrop_path;
+    }
+
+
+
     starsNumber = starsCalculator(arr[ index ].vote_average); 
     source = $("#item-template").html();
     item = Handlebars.compile(source); 
 
+    console.log('https://image.tmdb.org/t/p/​' + posterDim + posterUrl); 
+
     parameters = {
+        imagePath: 'https://image.tmdb.org/t/p/​' + posterDim + posterUrl, 
         type: typeOfSelectedItem,
         title: titleName, 
         originalTitle: originalTitleName, 
