@@ -36,21 +36,25 @@
 
     <script id="item-template" type="text/x-handlebars-template"> 
 
-        <div class="item">
-            <img src="{{imagePath}}" class="item__poster-img" alt="">
-            <span class="item__type">{{type}}</span>
-            <h2 class="item__title"> {{ title }} </h2>
+        <div class="item" style="background-image: url({{imagePath}})">
+
+            <!-- <img src="{{imagePath}}" class="item__poster-img" alt=""> -->
+
             <div class="item__details">
-                <div class="item__property">
-                    <span>Original title: </span> 
-                    <span class="item__property--value"> {{originalTitle}} </span>                
-                </div>
-                <div class="item__property item__property--flex">
-                    <span>Original language: </span>
-                    <span class="item__property--value-flag"> {{{originalLanguage}}} </span>
-                </div>
-                <div class="item__property">
-                    <span class="item__stars">{{{rating}}}</span>
+                <div class="item__details--flex-wrapper">
+                    <span class="item__type">{{type}}</span>
+                    <h2 class="item__title"> {{ title }} </h2>        
+                    <div class="item__property">
+                        <span>Original title: </span> 
+                        <span class="item__property--value"> {{originalTitle}} </span>                
+                    </div>
+                    <div class="item__property">
+                        <span>Original language: </span>
+                        <span class="item__property--value-flag"> {{{originalLanguage}}} </span>
+                    </div>
+                    <div class="item__property">
+                        <span class="item__stars">{{{rating}}}</span>
+                    </div>
                 </div>
             </div>
         </div> 
