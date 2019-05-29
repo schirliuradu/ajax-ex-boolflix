@@ -2,38 +2,83 @@
 
 $(document).ready(function() {
 
-    $('.header__search').click(function() {
 
+
+    $('.header__search').click(function() {
+        removePreviousResearch();
+        renderTheLoadingIcon(); 
         getItems( getInputValue() ); 
         cleanInputField(); 
-
+        // pagesRender( 5 );
     }); 
 
     $('.header__input').keyup(function( e ) {
 
         if ( e.which === 13 ) {
+            removePreviousResearch();
+            renderTheLoadingIcon();
             getItems( getInputValue() ); 
-            cleanInputField();         
+            cleanInputField();     
+            // pagesRender( 5 );  
         }
 
     });
 
     $(document).on('mouseenter', '.item', function() {
         
-        $(this).find('.item__details').slideToggle(400); 
+        $(this).find('.item__details').delay(150).slideToggle(400); 
+        // $(this).find('.item__details').delay(150).fadeToggle();
         
     });
 
     $(document).on('mouseleave', '.item', function() {
         
         $(this).find('.item__details').slideToggle(200); 
+        // $(this).find('.item__details').fadeToggle();
         
     });
+
+    var inputV = getInputValue(); 
+    var array = [];
+
+    // gestore button avanti di una pagina 
+
+    $(document).on('click', '.pagination__go-forw', function() {
+
+        removePreviousResearch();
+        renderTheLoadingIcon();``
+        getItems( array[0], goForwardWithOnePage() ); 
+        cleanInputField();     
+
+    }); 
+
+
+
+    // gestore button indietro di una pagina 
+
+
+
+
+    // gestore pagina clickata direttamente 
 
 }); 
 
 
 // -------------- 
+
+function renderTheLoadingIcon() {
+    var icon = '<div class="loader"><i class="fas fa-spinner"></i></div>'; 
+    $('.content').prepend(icon); 
+     
+}
+
+function deleteTheLoadingIcon() { 
+
+    $('.loader').remove(); 
+
+}
+
+
 
 // funzione che restituisce la stringa digitata dall'utente
 function getInputValue() {
@@ -42,7 +87,6 @@ function getInputValue() {
     if ( $('.header__input') !== '' ) {
         value = $('.header__input').val(); 
     }
-
     return value; 
 }
 
@@ -51,31 +95,39 @@ function cleanInputField() {
     $('.header__input').val(''); 
     // toglie il focus dall'input 
     $('.header__input').blur(); 
-    // also cleaning the container from previous research
+}
+
+function removePreviousResearch() {
     $('.content').empty(); 
+
+    setContentToFlex(); 
+    if ( $('.pagination') ) {
+        $('.pagination').remove(); 
+    }
 }
 
 
-
-
 // ajax call for movies 
-function getItems( q ) {
+function getItems( q, pagina = 1 ) {
     var chiave = '1c72c8fa9e2142b6517ecec927e56964'; 
+    var queryString = q; 
     $.ajax({
-        url: 'https://api.themoviedb.org/3/search/multi?api_key=' + chiave + '&language=language&page=1&query=q', 
+        url: 'https://api.themoviedb.org/3/search/multi?api_key=' + chiave + '&language=language&page=pagina&query=queryString', 
         method: 'GET', 
         data: { 
-            query: q,     // l'anno lo metto come valore fisso, tanto non ci interessa considerarne altri 
-            language: 'it-IT' 
+            query: queryString,     // l'anno lo metto come valore fisso, tanto non ci interessa considerarne altri 
+            language: 'it-IT', 
+            page: pagina
         }, 
         success: function( data ) { 
-    
+
+            deleteTheLoadingIcon(); 
             manageQueriedItems( data ); 
     
         }, 
         error: function( error ) { 
-
-            if ( q === '' ) {
+            deleteTheLoadingIcon(); 
+            if ( queryString === '' ) {
                 alert('Please fill the input with the film title that you want to find!'); 
             } else {
                 alert('There\'s something wrong! ' + error); 
@@ -90,7 +142,13 @@ function manageQueriedItems( obj ) {
     var results = obj.results;
     var items = []; 
 
-    if ( results.length !== 0 ) {
+    if ( results.length > 0 ) {
+
+        // mostro la paginazione 
+        var pagesNumber = obj.total_pages; 
+        if ( pagesNumber > 1 ) {
+            pagesRender( pagesNumber ); 
+        }
 
         /* 
             La chiamata MULTI restituisce oltre a type movie e tv anche persone e altro. Questo ciclo 
@@ -221,3 +279,78 @@ function flagSwitcher( lang ) {
     return result; 
 }
 
+
+/* ------------------------- */
+/* ------ pagination ------ */
+/* ----------------------- */ 
+
+// funzione che disegna le pagine 
+
+function displayPages( n ) {
+    var string = ''; 
+    for ( var i = 1; i <= n; i++ ) {
+        string += '<span class="pagination__item-number" data-index="' + i + '">' + i + '</span>'; 
+
+        if ( n > 5 && i > 5 ) {
+            string += ' ...'; 
+            return string; 
+        }
+
+        if ( n > 6 && i > 6 ) {
+            string = '... ' + string; 
+        }
+
+    } 
+    return string; 
+} 
+
+function pagesRender( pageNumber ) {
+    var source, pagination, parameters, result; 
+    // includere nuovo template handlebars 
+    source = $("#page-template").html();
+    pagination = Handlebars.compile(source); 
+
+    parameters = {
+        pages: displayPages( pageNumber )
+    };  
+
+    result = pagination(parameters); 
+    $(result).insertAfter( $('.content') ); 
+}
+
+
+
+
+
+
+
+
+// funzione che manda avanti di uno la paginazione 
+
+function goForwardWithOnePage(  ) {
+    
+    var curpage = 1;
+    $('.pagination__item-number').removeClass('selected-page'); 
+    $('.pagination__item-number[data-index="' + curpage + '"]').addClass('selected-page'); 
+
+    // if ( $('.pagination__item-number').text() === curPage ) {
+    //     $('.pagination__item-number').addClass('selected__page'); 
+    // }
+
+    curpage++; 
+
+}
+
+
+
+
+
+// funzione che manda indietro di uno la paginazione 
+
+
+
+
+
+
+
+// funzione che, al click sulla pagina diretta, rimanda alla pagina selezionata 

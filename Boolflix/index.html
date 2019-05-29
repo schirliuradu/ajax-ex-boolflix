@@ -22,7 +22,8 @@
             </div>
         </header> 
 
-        <div class="content"></div>
+        <div class="content content--flex"></div> 
+
 
         <footer class="footer">
             <span class="footer__copy">
@@ -37,8 +38,6 @@
     <script id="item-template" type="text/x-handlebars-template"> 
 
         <div class="item" style="background-image: url({{imagePath}})">
-
-            <!-- <img src="{{imagePath}}" class="item__poster-img" alt=""> -->
 
             <div class="item__details">
                 <div class="item__details--flex-wrapper">
@@ -58,6 +57,24 @@
                 </div>
             </div>
         </div> 
+
+    </script>
+
+
+    <script id="page-template" type="text/x-handlebars-template"> 
+
+        <div class="pagination"> 
+            <button class="btn pagination__go-back"> << </button>
+
+            {{{pages}}} 
+
+            <!-- <span class="pagination__item-number"> 1 </span> 
+            <span class="pagination__item-number selected__page"> 2 </span> 
+            <span class="pagination__item-number"> 3 </span> 
+            <span class="pagination__item-number"> 4 </span>  --> 
+            
+            <button class="btn pagination__go-forw"> >> </button>
+        </div>
 
     </script>
 

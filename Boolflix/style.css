@@ -60,7 +60,7 @@ body {
 .header__search {
     padding: .8rem 1.6rem; 
     border-radius: 5rem; 
-    background-color: darkred; 
+    background-color: #8b0000; 
     color: white; 
     font-size: 1.5rem;
     font-weight: 300; 
@@ -72,7 +72,7 @@ body {
     right: 1.7rem;
     top: 3px; 
 
-    transition: transform .3s; 
+    transition: box-shadow .3s; 
 }
 
 .btn {
@@ -264,4 +264,86 @@ body {
     text-align: center;
     line-height: 1.6;
     color: #bbb; 
+}
+
+
+/* ------------------------- */
+/* ---- loader spinner ---- */
+/* ----------------------- */
+
+.loader {
+    width: 10rem; 
+    height: 10rem; 
+    border-radius: 50%; 
+    border: 1px outset white; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+}
+
+.loader i {
+    font-size: 8rem; 
+    color: red; 
+    transform-origin: 50% 50%; 
+    animation: load .3s infinite linear;
+}
+
+@keyframes load {
+    from {
+        transform: rotate(0);
+    } to { 
+        transform: rotate(360deg); 
+    }
+}
+
+
+/* ------------------------- */
+/* ------ pagination ------ */
+/* ----------------------- */ 
+
+.pagination {
+    background-color: red; 
+    color: white; 
+
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+
+    padding: 3rem; 
+}
+
+.pagination__go-back, 
+.pagination__go-forw {
+    padding: 1rem 2rem; 
+    background-color: black; 
+    color: white; 
+    border-radius: .5rem; 
+    font-size: 1.6rem; 
+}
+
+.pagination__go-back {
+    margin-right: 2rem; 
+}
+
+.pagination__go-forw {
+    margin-left: 2rem; 
+}
+
+.pagination__item-number {
+    display: inline-block; 
+    padding: .8rem 1.5rem; 
+    background-color: rgba(0, 0, 0, 0.493); 
+    border: 1px outset black; 
+    color: white; 
+    border-radius: .5rem; 
+}
+
+.pagination__item-number:not(:last-child) {
+    margin-right: 1rem; 
+}
+
+.selected-page {
+    background-color: white;
+    color: black;  
+    transform: scale(1.1); 
 }
