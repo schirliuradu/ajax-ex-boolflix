@@ -17,7 +17,7 @@
                 <span class="header__logo">boolflix</span>    
             </div>
             <div class="header__right">
-                <input type="text" class="header__input"> 
+                <input type="text" class="header__input" value="">
                 <button class="btn header__search">Cerca</button>
             </div>
         </header> 
@@ -64,7 +64,7 @@
     <script id="page-template" type="text/x-handlebars-template"> 
 
         <div class="pagination"> 
-            <button class="btn pagination__go-back"> << </button>
+            <button class="btn pagination__go-back"> <i class="fas fa-chevron-left"></i> </button>
 
             {{{pages}}} 
 
@@ -73,7 +73,7 @@
             <span class="pagination__item-number"> 3 </span> 
             <span class="pagination__item-number"> 4 </span>  --> 
             
-            <button class="btn pagination__go-forw"> >> </button>
+            <button class="btn pagination__go-forw"> <i class="fas fa-chevron-right"></i> </button>
         </div>
 
     </script>

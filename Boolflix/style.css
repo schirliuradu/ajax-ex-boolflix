@@ -275,7 +275,8 @@ body {
     width: 10rem; 
     height: 10rem; 
     border-radius: 50%; 
-    border: 1px outset white; 
+    background-color: black; 
+    border: 3px outset #cecece; 
     display: flex; 
     align-items: center; 
     justify-content: center; 
@@ -283,9 +284,9 @@ body {
 
 .loader i {
     font-size: 8rem; 
-    color: red; 
+    color: #cecece; 
     transform-origin: 50% 50%; 
-    animation: load .3s infinite linear;
+    animation: load .6s infinite linear;
 }
 
 @keyframes load {
@@ -302,40 +303,67 @@ body {
 /* ----------------------- */ 
 
 .pagination {
-    background-color: red; 
     color: white; 
 
     display: flex; 
     align-items: center; 
     justify-content: center; 
 
-    padding: 3rem; 
+    padding: 3rem;
+    margin-bottom: 5rem;  
 }
 
 .pagination__go-back, 
 .pagination__go-forw {
-    padding: 1rem 2rem; 
+    cursor: pointer; 
+    width: 6rem;
+    height: 6rem; 
     background-color: black; 
     color: white; 
-    border-radius: .5rem; 
-    font-size: 1.6rem; 
+    border-radius: 50%;  
+    font-size: 2.2rem; 
+}
+
+
+.pagination__go-back i, 
+.pagination__go-forw i {
+    transition: transform .3s; 
+}
+
+.pagination__go-back:hover i, 
+.pagination__go-forw:hover i {
+    transform: scale(1.25); 
 }
 
 .pagination__go-back {
-    margin-right: 2rem; 
+    margin-right: 2.5rem; 
 }
 
 .pagination__go-forw {
-    margin-left: 2rem; 
+    margin-left: 2.5rem; 
 }
 
 .pagination__item-number {
-    display: inline-block; 
-    padding: .8rem 1.5rem; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    width: 4rem;
+    height: 4rem; 
+    font-size: 1.7rem; 
     background-color: rgba(0, 0, 0, 0.493); 
     border: 1px outset black; 
     color: white; 
-    border-radius: .5rem; 
+    border-radius: 50%; 
+
+    transition: all .3s; 
+}
+
+.pagination__item-number:hover {
+    border: 2px solid black; 
+    background-color: white;
+    color: black;  
+    transform: scale(1.15); 
 }
 
 .pagination__item-number:not(:last-child) {
@@ -345,5 +373,5 @@ body {
 .selected-page {
     background-color: white;
     color: black;  
-    transform: scale(1.1); 
+    transform: scale(1.15); 
 }

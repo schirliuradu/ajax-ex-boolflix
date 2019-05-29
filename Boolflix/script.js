@@ -2,83 +2,87 @@
 
 $(document).ready(function() {
 
-
+    var currentPage; 
+    var searchedString; 
 
     $('.header__search').click(function() {
         removePreviousResearch();
         renderTheLoadingIcon(); 
         getItems( getInputValue() ); 
         cleanInputField(); 
-        // pagesRender( 5 );
+        searchedString = $('.header__input').attr('value'); 
+        currentPage = 1;
     }); 
 
     $('.header__input').keyup(function( e ) {
-
         if ( e.which === 13 ) {
             removePreviousResearch();
             renderTheLoadingIcon();
             getItems( getInputValue() ); 
+            searchedString = $('.header__input').attr('value'); 
             cleanInputField();     
-            // pagesRender( 5 );  
+            currentPage = 1;
+        }
+    });
+
+    $(document).on('mouseenter', '.item', function() {
+        $(this).find('.item__details').delay(150).slideToggle(400); 
+    });
+
+    $(document).on('mouseleave', '.item', function() {
+        $(this).find('.item__details').slideToggle(200); 
+    });
+
+    // gestore button avanti di una pagina 
+    $(document).on('click', '.pagination__go-forw', function() {
+        removePreviousResearch();
+        renderTheLoadingIcon();
+        currentPage++; 
+        getItems( searchedString, currentPage ); 
+
+    }); 
+
+    // gestore button indietro di una pagina 
+    $(document).on('click', '.pagination__go-back', function() {
+        removePreviousResearch();
+        renderTheLoadingIcon();
+        currentPage--; 
+        getItems( searchedString, currentPage ); 
+    }); 
+
+
+    // gestore pagina clickata direttamente 
+    $(document).on('click', '.pagination__item-number', function() {
+
+        if ( !$(this).hasClass('selected-page') ) {
+            
+            var selectedPage = $(this).attr('data-index'); 
+            /*
+                imposto il valore (globale) della pagina corrente a questa pagina, 
+                così continuano a funzionare anche i bottoni avanti indietro, 
+                correttamente 
+            */
+            currentPage = selectedPage; 
+            
+            removePreviousResearch();
+            renderTheLoadingIcon(); 
+            getItems( searchedString, selectedPage ); 
         }
 
     });
 
-    $(document).on('mouseenter', '.item', function() {
-        
-        $(this).find('.item__details').delay(150).slideToggle(400); 
-        // $(this).find('.item__details').delay(150).fadeToggle();
-        
-    });
-
-    $(document).on('mouseleave', '.item', function() {
-        
-        $(this).find('.item__details').slideToggle(200); 
-        // $(this).find('.item__details').fadeToggle();
-        
-    });
-
-    var inputV = getInputValue(); 
-    var array = [];
-
-    // gestore button avanti di una pagina 
-
-    $(document).on('click', '.pagination__go-forw', function() {
-
-        removePreviousResearch();
-        renderTheLoadingIcon();``
-        getItems( array[0], goForwardWithOnePage() ); 
-        cleanInputField();     
-
-    }); 
-
-
-
-    // gestore button indietro di una pagina 
-
-
-
-
-    // gestore pagina clickata direttamente 
-
 }); 
-
 
 // -------------- 
 
 function renderTheLoadingIcon() {
     var icon = '<div class="loader"><i class="fas fa-spinner"></i></div>'; 
     $('.content').prepend(icon); 
-     
 }
 
 function deleteTheLoadingIcon() { 
-
     $('.loader').remove(); 
-
 }
-
-
 
 // funzione che restituisce la stringa digitata dall'utente
 function getInputValue() {
@@ -87,6 +91,10 @@ function getInputValue() {
     if ( $('.header__input') !== '' ) {
         value = $('.header__input').val(); 
     }
+
+    // memorizzo il valore cercato - mi serve per la paginazione 
+    $('.header__input').attr('value', $('.header__input').val()); 
+
     return value; 
 }
 
@@ -108,7 +116,7 @@ function removePreviousResearch() {
 
 
 // ajax call for movies 
-function getItems( q, pagina = 1 ) {
+function getItems( q, pagina ) {
     var chiave = '1c72c8fa9e2142b6517ecec927e56964'; 
     var queryString = q; 
     $.ajax({
@@ -147,8 +155,9 @@ function manageQueriedItems( obj ) {
         // mostro la paginazione 
         var pagesNumber = obj.total_pages; 
         if ( pagesNumber > 1 ) {
-            pagesRender( pagesNumber ); 
-        }
+            pagesRender( pagesNumber, obj.page ); 
+            changeSelectedPage( obj.page, pagesNumber ); 
+        } 
 
         /* 
             La chiamata MULTI restituisce oltre a type movie e tv anche persone e altro. Questo ciclo 
@@ -284,73 +293,60 @@ function flagSwitcher( lang ) {
 /* ------ pagination ------ */
 /* ----------------------- */ 
 
-// funzione che disegna le pagine 
+// funzione che disegna la lista delle pagine 
 
-function displayPages( n ) {
+function displayPages( n, curPage ) {
     var string = ''; 
-    for ( var i = 1; i <= n; i++ ) {
-        string += '<span class="pagination__item-number" data-index="' + i + '">' + i + '</span>'; 
+    var minPage = curPage; 
+    var maxPage = minPage + 4; 
+    var i = 1;
 
-        if ( n > 5 && i > 5 ) {
-            string += ' ...'; 
-            return string; 
+    if ( n < 5 ) { 
+        // caso base
+        for ( var i = 1; i <= n; i++ ) {
+            string += '<span class="pagination__item-number" data-index="' + i + '">' + i + '</span>'; 
         }
-
-        if ( n > 6 && i > 6 ) {
-            string = '... ' + string; 
+        // caso nel mezzo ( oltre 5 e fino a n - 5)
+    } else if ( n > 5 && maxPage <= n ) {
+        for ( var j = minPage; j <= maxPage; j++ ) {
+            string += '<span class="pagination__item-number" data-index="' + j + '">' + j + '</span>';
         }
+    } else {
+        // caso limite: smette di aggiungere pagine alla lista quando arriva in fondo 
+        for ( var k = n-4; k <= n; k++ ) {
+            string += '<span class="pagination__item-number" data-index="' + k + '">' + k + '</span>';
+        }        
+    }
 
-    } 
-    return string; 
+    return string;  
 } 
 
-function pagesRender( pageNumber ) {
+// funzione che renderizza le pagine a schermo, se e dove ci sono 
+function pagesRender( pageNumber, currentPage ) {
     var source, pagination, parameters, result; 
     // includere nuovo template handlebars 
     source = $("#page-template").html();
     pagination = Handlebars.compile(source); 
 
     parameters = {
-        pages: displayPages( pageNumber )
+        pages: displayPages( pageNumber, currentPage )
     };  
 
     result = pagination(parameters); 
     $(result).insertAfter( $('.content') ); 
 }
 
+// funzione che gestisce lo scorrimento delle pagine ( dei bottoni più precisamente )
+function changeSelectedPage( currentPage, totalPages ) { 
+    $('.pagination__item-number').removeClass('.selected-page'); 
+    $('.pagination__item-number[data-index="' + currentPage + '"]').addClass('selected-page'); 
+    $('.pagination').attr('data-totalPages', totalPages); 
 
-
-
-
-
-
-
-// funzione che manda avanti di uno la paginazione 
-
-function goForwardWithOnePage(  ) {
-    
-    var curpage = 1;
-    $('.pagination__item-number').removeClass('selected-page'); 
-    $('.pagination__item-number[data-index="' + curpage + '"]').addClass('selected-page'); 
-
-    // if ( $('.pagination__item-number').text() === curPage ) {
-    //     $('.pagination__item-number').addClass('selected__page'); 
-    // }
-
-    curpage++; 
-
-}
-
-
-
-
-
-// funzione che manda indietro di uno la paginazione 
-
-
-
-
-
-
-
-// funzione che, al click sulla pagina diretta, rimanda alla pagina selezionata 
+    // se sono sull'ultima pagina --- disabilito il bottone avanti
+    if ( currentPage === totalPages ) {
+        $('.pagination__go-forw').attr('disabled', true); 
+    // se sono sulla prima pagina --- disabilito il bottone indietro
+    } else if ( currentPage === 1 ) {
+        $('.pagination__go-back').attr('disabled', true); 
+    }
+} 
