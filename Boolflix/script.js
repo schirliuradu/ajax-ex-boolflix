@@ -25,14 +25,6 @@ $(document).ready(function() {
         }
     });
 
-    $(document).on('mouseenter', '.item', function() {
-        $(this).find('.item__details').delay(150).slideToggle(400); 
-    });
-
-    $(document).on('mouseleave', '.item', function() {
-        $(this).find('.item__details').slideToggle(200); 
-    });
-
     // gestore button avanti di una pagina 
     $(document).on('click', '.pagination__go-forw', function() {
         removePreviousResearch();
@@ -214,11 +206,12 @@ function displayQueriedItems( arr, index ) {
         alternativeImg = 'img/other/Movie.png';
     } 
 
+
     posterPre = 'https://image.tmdb.org/t/p/'; 
     posterDim = 'w342'; 
     posterUrl = posterPre + posterDim + arr[ index ].poster_path; 
 
-    if ( arr[ index ].poster_path === 'null' ) {
+    if ( arr[ index ].poster_path == null && arr[ index ].backdrop_path != null ) {
         posterDim = 'w300'; 
         posterUrl =  posterPre + posterDim + arr[ index ].backdrop_path;
     } else if ( (arr[ index ].backdrop_path === null) && ( arr[ index ].poster_path ) === null) {
