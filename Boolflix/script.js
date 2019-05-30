@@ -6,9 +6,10 @@ $(document).ready(function() {
     var searchedString; 
 
     $('.header__search').click(function() {
+        currentPage = 1;
         removePreviousResearch();
         renderTheLoadingIcon(); 
-        getItems( getInputValue() ); 
+        getItems( getInputValue(), currentPage ); 
         cleanInputField(); 
         searchedString = $('.header__input').attr('value'); 
         currentPage = 1;
@@ -16,12 +17,13 @@ $(document).ready(function() {
 
     $('.header__input').keyup(function( e ) {
         if ( e.which === 13 ) {
+            currentPage = 1;
             removePreviousResearch();
             renderTheLoadingIcon();
-            getItems( getInputValue() ); 
+            getItems( getInputValue(), currentPage ); 
             searchedString = $('.header__input').attr('value'); 
             cleanInputField();     
-            currentPage = 1;
+
         }
     });
 
@@ -78,12 +80,7 @@ function deleteTheLoadingIcon() {
 
 // funzione che restituisce la stringa digitata dall'utente
 function getInputValue() {
-    var value; 
-
-    if ( $('.header__input') !== '' ) {
-        value = $('.header__input').val(); 
-    }
-
+    var value = $('.header__input').val(); 
     // memorizzo il valore cercato - mi serve per la paginazione 
     $('.header__input').attr('value', $('.header__input').val()); 
 
@@ -106,23 +103,65 @@ function removePreviousResearch() {
     }
 }
 
+/* 
+    funzione che crea un array di array dato un array in input ( :D ) 
+    --- mi serve per tenere traccia e caricare 20 risultati alla 
+    volta, per la paginazione 
+*/
+function splitArrayInParts( arr ) { 
+    // dichiaro array vuoto che conterra tutti gli array di 20 elementi
+    var x = []; 
+    // indice
+    var i = 1; 
+    var limit = 20;
+    var k = 0;
+    // ciclo fino a che ho tot array di 20 elementi ( tot calcolato in base alla lunghezza dell'array originale )
+    while ( i <= Math.ceil(arr.length/20) ) {
+        // dichiaro array vuoto, che verrà vuotato ogni ciclo, per prendere nuovi elementi
+        var y = []; 
+        // ciclo fino a che k è minore di 20 inizialmente ( del limite dopo il primo ciclo ) e fino a che non esaurisco l'array originale 
+        while ( k < limit && k < arr.length ) { 
+            // carico i singoli elementi in y, formando ogni volta un array di 20 elementi, tranne l'ultimo, che dipende dalla lunghezza dell'array originale
+            y.push( arr[ k ] ); 
+            k++; 
+        } 
+        // faccio slittare il limite di 20, per considerare ogni ciclo nuovi elementi
+        limit += 20; 
+        // carico l'array precedentemente creato in posizione j, nel nuovo array che restituirò alla fine 
+        x.push( y ); 
+        i++; 
+    } 
+    return x; 
+}
 
-// ajax call for movies 
-function getItems( q, pagina ) {
+
+/* 
+    funzione che mi fa la chiamata su tutte le pagine, innescando un'altra chiamata, 
+    per tirare giù subito tutti i risultati, e gestirli dopo con la paginazione
+*/
+function getItems( q, currentP ) {
     var chiave = '1c72c8fa9e2142b6517ecec927e56964'; 
-    var queryString = q; 
+
     $.ajax({
-        url: 'https://api.themoviedb.org/3/search/multi?api_key=' + chiave + '&language=language&page=pagina&query=queryString', 
+        url: 'https://api.themoviedb.org/3/search/multi?api_key=' + chiave + '&language=language&page=1&query=q', 
         method: 'GET', 
         data: { 
-            query: queryString,     // l'anno lo metto come valore fisso, tanto non ci interessa considerarne altri 
-            language: 'it-IT', 
-            page: pagina
+            query: q,   
+            language: 'it-IT'
         }, 
         success: function( data ) { 
 
-            deleteTheLoadingIcon(); 
-            manageQueriedItems( data ); 
+            var array = []; 
+            var i = 1; 
+            while ( i <= data.total_pages ) {
+                getAllItemsInOneArray( q, i, array );
+                i++; 
+            } 
+            // work around :( dovuto, altrimenti mi restituisce prima l'array vuoto, prima di caricarlo (problema di asincronicità)
+            setTimeout (function() {
+                deleteTheLoadingIcon(); 
+                manageQueriedItems( splitArrayInParts( array ), currentP ); 
+            }, 500); 
     
         }, 
         error: function( error ) { 
@@ -131,41 +170,53 @@ function getItems( q, pagina ) {
                 alert('Please fill the input with the film title that you want to find!'); 
             } else {
                 alert('There\'s something wrong! ' + error); 
+            } 
+        } 
+    }); 
+}
+
+// funzione che loopa su tutte le pagina, da chiamare dentro l'ajax che richiama solo la prima pagina 
+function getAllItemsInOneArray( query, page, array ) {
+    var chiave = '1c72c8fa9e2142b6517ecec927e56964'; 
+    $.ajax({
+        url: 'https://api.themoviedb.org/3/search/multi?api_key=' + chiave + '&language=language&page=page&query=query', 
+        method: 'GET', 
+        data: { 
+            query: query,    
+            language: 'it-IT', 
+            page: page
+        }, 
+        success: function( data ) { 
+            var j = 0;
+            while ( j < data.results.length ) {
+                if ( data.results[ j ].media_type === 'movie' || data.results[ j ].media_type === 'tv' ) {
+                    array.push( data.results[ j ] ); 
+                }
+                j++; 
             }
-        }
-    });
+        } 
+    }); 
 }
 
 
+// funzione che renderizza 20 pagine alla volta 
+function renderTwentyResultsPerPage( array ) {
+    for ( var j = 0; j < array.length; j++ ) { 
+        displayQueriedItems( array, j ); 
+    } 
+
+}
+
 // funzione che decide cosa fare nel caso in cui ci sono risultati della ricerca oppure no 
-function manageQueriedItems( obj ) {
-    var results = obj.results;
-    var items = []; 
-
-    if ( results.length > 0 ) {
-
-        // mostro la paginazione 
-        var pagesNumber = obj.total_pages; 
+function manageQueriedItems( results, currentPage ) {
+    if ( results.length > 0 ) { 
+        var pagesNumber = results.length; 
+        // mostro la paginazione (da riguardare dopo) 
         if ( pagesNumber > 1 ) {
-            pagesRender( pagesNumber, obj.page ); 
-            changeSelectedPage( obj.page, pagesNumber ); 
+            renderTwentyResultsPerPage( results[ currentPage - 1 ] ); 
+            pagesRender( pagesNumber, currentPage ); 
+            changeSelectedPage( currentPage, pagesNumber ); 
         } 
-
-        /* 
-            La chiamata MULTI restituisce oltre a type movie e tv anche persone e altro. Questo ciclo 
-            ripulisce l'array dei risultati ricevuti dagli oggetti che a noi non interessa, lasciando 
-            solo le serie tv e i film! 
-        */
-        for ( var i = 0; i < results.length; i++ ) { 
-            if ( results[ i ].media_type === 'movie' || results[ i ].media_type === 'tv' ) {
-                items.push( results[ i ] );
-            }
-        }
-
-        // passo l'array rielaborato, dal quale ho tolto le tipologie che non mi interessavano 
-        for ( var j = 0; j < items.length; j++ ) { 
-            displayQueriedItems( items, j ); 
-        }
     } else {
         displayAlternativeMessage(); 
     }
@@ -343,3 +394,55 @@ function changeSelectedPage( currentPage, totalPages ) {
         $('.pagination__go-back').attr('disabled', true); 
     }
 } 
+
+
+
+
+
+
+/* -------------------------- */
+/* ------ V milestone ------ */
+/* ------------------------ */ 
+
+
+// ajax call for movies 
+// function getItems( q, pagina ) {
+//     var chiave = '1c72c8fa9e2142b6517ecec927e56964'; 
+//     var queryString = q; 
+//     $.ajax({
+//         url: 'https://api.themoviedb.org/3/search/multi?api_key=' + chiave + '&language=language&page=pagina&query=queryString', 
+//         method: 'GET', 
+//         data: { 
+//             query: queryString,     // l'anno lo metto come valore fisso, tanto non ci interessa considerarne altri 
+//             language: 'it-IT', 
+//             page: pagina
+//         }, 
+//         success: function( data ) { 
+
+//             deleteTheLoadingIcon(); 
+//             manageQueriedItems( data ); 
+    
+//         }, 
+//         error: function( error ) { 
+//             deleteTheLoadingIcon(); 
+//             if ( queryString === '' ) {
+//                 alert('Please fill the input with the film title that you want to find!'); 
+//             } else {
+//                 alert('There\'s something wrong! ' + error); 
+//             }
+//         }
+//     });
+// }
+
+
+// Link esatto per andare a prendere il casting ( fare funzione con chiamata ajax a cui si passa l'ID del film )
+//    https://api.themoviedb.org/3/movie/315872?api_key=1c72c8fa9e2142b6517ecec927e56964&append_to_response=credits
+
+
+// Gets all MOVIE (only) list of all genres 
+//      https://api.themoviedb.org/3/genre/movie/list?api_key=1c72c8fa9e2142b6517ecec927e56964&language=en-US
+
+// Gets all TV (only) list of all genres 
+//      https://api.themoviedb.org/3/genre/tv/list?api_key=1c72c8fa9e2142b6517ecec927e56964&language=en-US
+
+
