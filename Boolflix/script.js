@@ -65,6 +65,27 @@ $(document).ready(function() {
 
     });
 
+
+    $(document).on('click', '.item', function( ) {
+
+        // recupera il cast sia per i movie che per le serie Tv 
+        var currentItemID = $(this).attr('data-itemid'); 
+        var currentItemType = $(this).attr('data-itemtype'); 
+
+        getAllItemInfo( currentItemID, currentItemType ); 
+
+        // come fare a mettere il tutto nella modal window??? 
+
+        // getGenresOfTheItem( currentItemID, currentItemType ); 
+
+    }); 
+
+    $(document).on('click', '.itemPopup__closing-x', function() {
+
+        $(this).closest('.relative-wrapper').remove(); 
+
+    });
+
 }); 
 
 // -------------- 
@@ -161,7 +182,7 @@ function getItems( q, currentP ) {
             setTimeout (function() {
                 deleteTheLoadingIcon(); 
                 manageQueriedItems( splitArrayInParts( array ), currentP ); 
-            }, 500); 
+            }, 600); 
     
         }, 
         error: function( error ) { 
@@ -189,8 +210,12 @@ function getAllItemsInOneArray( query, page, array ) {
         success: function( data ) { 
             var j = 0;
             while ( j < data.results.length ) {
+                // escludo ciò che non mi interessa dalla ricerca 
                 if ( data.results[ j ].media_type === 'movie' || data.results[ j ].media_type === 'tv' ) {
-                    array.push( data.results[ j ] ); 
+                    // se manca la foto non lo carico ( per ragioni estetiche )
+                    if ( data.results[ j ].poster_path != null ) {
+                        array.push( data.results[ j ] ); 
+                    }
                 }
                 j++; 
             }
@@ -241,7 +266,7 @@ function renderStars( n ) {
 
 // funzione che mostra a video i risultati della ricerca 
 function displayQueriedItems( arr, index ) {
-    var posterDim, posterUrl, alternativeImg, posterPre, typeOfSelectedItem, titleName, originalTitleName, starsNumber, source, item, parameters, result;
+    var posterDim, posterUrl, posterPre, typeOfSelectedItem, titleName, originalTitleName, starsNumber, source, item, parameters, result;
 
     setContentToGrid(); 
 
@@ -250,30 +275,22 @@ function displayQueriedItems( arr, index ) {
     if ( typeOfSelectedItem === 'tv' ) {
         titleName = arr[ index ].name;
         originalTitleName = arr[ index ].original_name;
-        alternativeImg = './img/other/TvSer.png';
     } else if ( typeOfSelectedItem === 'movie' ) {
         titleName = arr[ index ].title; 
         originalTitleName = arr[ index ].original_title; 
-        alternativeImg = 'img/other/Movie.png';
     } 
-
 
     posterPre = 'https://image.tmdb.org/t/p/'; 
     posterDim = 'w342'; 
     posterUrl = posterPre + posterDim + arr[ index ].poster_path; 
-
-    if ( arr[ index ].poster_path == null && arr[ index ].backdrop_path != null ) {
-        posterDim = 'w300'; 
-        posterUrl =  posterPre + posterDim + arr[ index ].backdrop_path;
-    } else if ( (arr[ index ].backdrop_path === null) && ( arr[ index ].poster_path ) === null) {
-        posterUrl = alternativeImg; 
-    }
 
     starsNumber = starsCalculator(arr[ index ].vote_average); 
     source = $("#item-template").html();
     item = Handlebars.compile(source); 
 
     parameters = {
+        itemID: arr[ index ].id,
+        itemType: typeOfSelectedItem, 
         imagePath: posterUrl, 
         type: typeOfSelectedItem,
         title: titleName, 
@@ -283,9 +300,7 @@ function displayQueriedItems( arr, index ) {
     };  
 
     result = item(parameters); 
-
     $('.content').append(result); 
-
 }
 
 // funzione che mostra a video la mancanza di match nella ricerca 
@@ -396,53 +411,132 @@ function changeSelectedPage( currentPage, totalPages ) {
 } 
 
 
-
-
-
-
 /* -------------------------- */
 /* ------ V milestone ------ */
 /* ------------------------ */ 
 
 
-// ajax call for movies 
-// function getItems( q, pagina ) {
-//     var chiave = '1c72c8fa9e2142b6517ecec927e56964'; 
-//     var queryString = q; 
-//     $.ajax({
-//         url: 'https://api.themoviedb.org/3/search/multi?api_key=' + chiave + '&language=language&page=pagina&query=queryString', 
-//         method: 'GET', 
-//         data: { 
-//             query: queryString,     // l'anno lo metto come valore fisso, tanto non ci interessa considerarne altri 
-//             language: 'it-IT', 
-//             page: pagina
-//         }, 
-//         success: function( data ) { 
+function getAllItemInfo( ID, type ) {
+    var chiave = '1c72c8fa9e2142b6517ecec927e56964';  
+    $.ajax({
+        url: 'https://api.themoviedb.org/3/' + type + '/' + ID + '?api_key=' + chiave + '&language=it-IT&append_to_response=credits',
+        method: 'GET', 
 
-//             deleteTheLoadingIcon(); 
-//             manageQueriedItems( data ); 
+        success: function( data ) { 
+
+            var cast = createArrayWithCast( data ); 
+
+            manageItemInfos( data, type, cast ); 
+
+            console.log(cast); 
+
+            getGenresOfTheItem( ID, type ); 
+
     
-//         }, 
-//         error: function( error ) { 
-//             deleteTheLoadingIcon(); 
-//             if ( queryString === '' ) {
-//                 alert('Please fill the input with the film title that you want to find!'); 
-//             } else {
-//                 alert('There\'s something wrong! ' + error); 
-//             }
-//         }
-//     });
-// }
+        }
+    });
+} 
 
 
-// Link esatto per andare a prendere il casting ( fare funzione con chiamata ajax a cui si passa l'ID del film )
-//    https://api.themoviedb.org/3/movie/315872?api_key=1c72c8fa9e2142b6517ecec927e56964&append_to_response=credits
+/* --------------------------- */
+/* ------ VI milestone ------ */
+/* ------------------------- */
+
+function getGenresOfTheItem( ID, type ) {
+    var chiave = '1c72c8fa9e2142b6517ecec927e56964';  
+    $.ajax({
+        url: 'https://api.themoviedb.org/3/' + type + '/' + ID + '?api_key=' + chiave + '&language=it-IT', 
+        method: 'GET', 
+
+        success: function( data ) { 
 
 
-// Gets all MOVIE (only) list of all genres 
-//      https://api.themoviedb.org/3/genre/movie/list?api_key=1c72c8fa9e2142b6517ecec927e56964&language=en-US
+            // qua fare solo un altro handlebar template per il cast, da attaccare a quello sopra, visto che è garantito l'arrivo dei dati dopo il primo ( quando il primo e gia creato )
+            console.log(data); 
 
-// Gets all TV (only) list of all genres 
-//      https://api.themoviedb.org/3/genre/tv/list?api_key=1c72c8fa9e2142b6517ecec927e56964&language=en-US
+            var generi = [];
+            for ( var i = 0; i < data.genres.length; i++ ) {
+                generi.push( data.genres[ i ].name );
+            } 
+            console.log(generi); 
+        }
+    });
+} 
 
 
+// funzione che, dato un oggetto, ritorna un array contenente il cast (i primi 5, se ci sono)
+function createArrayWithCast( obj ) {
+    var attori = [];
+
+    // ne prendo solo 5 (i primi 5)
+    var i = 0; 
+    var limit = 5; 
+    
+    // nel caso in cui non ci siano attori (cast non definito) ritorna un array vuoto, da gestire successivamente! 
+    obj.credits.cast.length > 4 ? limit = 5 : limit = obj.credits.cast.length;
+
+    while ( i < limit ) {
+        attori.push( obj.credits.cast[ i ] ); 
+        i++; 
+    }
+
+    return attori ; 
+}
+
+function manageItemInfos( object, type, castArray ) {
+    var numeroStelle, source, item, parameters, result, titleName, originalTitleName; 
+
+    numeroStelle = starsCalculator(object.vote_average); 
+    if ( type === 'tv' ) {
+        titleName = object.name;
+        originalTitleName = object.original_name;
+    } else if ( type === 'movie' ) {
+        titleName = object.title; 
+        originalTitleName = object.original_title; 
+    } 
+
+    source = $("#single-item-template").html();
+    item = Handlebars.compile(source); 
+    console.log(castArray); 
+    parameters = {
+        titolo: titleName,
+        titoloOriginale: originalTitleName, 
+        imageUrl: 'https://image.tmdb.org/t/p/w780' + object.poster_path, 
+        linguaOriginale: flagSwitcher( object.original_language ),
+        descrizione: object.overview, 
+        stelle: renderStars( numeroStelle ), 
+        generi: genresRender( object.genres ), 
+        casting: castRender( castArray ) 
+    };  
+
+    result = item(parameters); 
+    $('body').append(result); 
+
+} 
+
+function genresRender( array ) {
+    var stringaFinale = ''; 
+    var i = 0; 
+
+    if ( array.length > 0 ) {
+        while ( i < array.length ) {
+            stringaFinale += '<span class="itemPopup__genre">' + array[ i ].name + '</span>';
+            i++; 
+        }
+    }
+    return stringaFinale; 
+}
+
+function castRender( array ) {
+    var stringa = ''; 
+    var i = 0;
+    var pathToImg = 'https://image.tmdb.org/t/p/w45';
+    if ( array.length > 0 ) {
+        while ( i < array.length ) {
+            stringa += '<div class="itemPopup__cast-member"><img class="itemPopup__cast-member--photo" src="' + pathToImg + array[ i ].profile_path + '"><span class="itemPopup__cast-member--name">' + array[ i ].name + '</span></div>'; 
+            i++;
+        }
+    }
+    console.log(stringa); 
+    return stringa; 
+} 

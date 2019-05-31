@@ -37,7 +37,7 @@
 
     <script id="item-template" type="text/x-handlebars-template"> 
 
-        <div class="item">
+        <div class="item" data-itemid="{{itemID}}" data-itemtype="{{itemType}}">
             <div class="item__side item__side--frontFace" style="background-image: url({{imagePath}})"></div>        
             <div class="item__side item__side--backFace">
                 <div class="item__details--flex-wrapper">
@@ -69,6 +69,64 @@
             <button class="btn pagination__go-forw"> <i class="fas fa-chevron-right"></i> </button>
         </div>
 
+    </script>
+
+
+    <!-- add modal for every film on click !!! -->
+    <script id="single-item-template" type="text/x-handlebars-template"> 
+
+        <div class="relative-wrapper">
+            <div class="itemPopup-container">
+                <span class="itemPopup__closing-x"><i class="far fa-times-circle"></i></span>
+                <div class="itemPopup">
+
+                    <div class="itemPopup__upside">
+                        <div class="itemPopup__leftside" style="background-image: url({{imageUrl}})"></div>
+
+                        <div class="itemPopup__rightside">
+
+                            <div class="itemPopup__cast-container">
+                                {{{casting}}}
+                            </div>
+        
+                            <div class="itemPopup__info">
+                                <span class="itemPopup__title">{{ titolo }}</span>
+                                <span class="itemPopup__property">Titolo originale </span>
+                                <span class="itemPopup__ortitle"> {{ titoloOriginale }}</span>
+                                <span class="itemPopup__orlang">{{{ linguaOriginale }}}</span>
+                                <span class="itemPopup__property">Descrizione </span>
+                                <p class="itemPopup__overview"> {{ descrizione }}</p>
+                                <div class="itemPopup__rating">
+                                    <span class="itemPopup__stars">
+                                        {{{ stelle }}}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="itemPopup__downside">
+                        {{{ generi }}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+
+    <script id="single-item-template" type="text/x-handlebars-template"> 
+
+        <div class="itemPopup__cast-member">
+            <img class="itemPopup__cast-member--photo" src="{{profileImgPath}}">
+            <span class="itemPopup__cast-member--name"> {{ name }} </span>
+        </div>
+        <div class="itemPopup__cast-member">
+            <img class="itemPopup__cast-member--photo" src="">
+            <span class="itemPopup__cast-member--name">Brad Pitt</span>
+        </div>
+        <div class="itemPopup__cast-member">
+            <img class="itemPopup__cast-member--photo" src="">
+            <span class="itemPopup__cast-member--name">Brad Pitt</span>
+        </div>
     </script>
 
     <!-- -------------------- -->
