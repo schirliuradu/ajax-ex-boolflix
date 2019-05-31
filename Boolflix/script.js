@@ -12,7 +12,6 @@ $(document).ready(function() {
         getItems( getInputValue(), currentPage ); 
         cleanInputField(); 
         searchedString = $('.header__input').attr('value'); 
-        currentPage = 1;
     }); 
 
     $('.header__input').keyup(function( e ) {
@@ -50,13 +49,14 @@ $(document).ready(function() {
 
         if ( !$(this).hasClass('selected-page') ) {
             
-            var selectedPage = $(this).attr('data-index'); 
+            var selectedPage = parseInt($(this).attr('data-index')); 
             /*
                 imposto il valore (globale) della pagina corrente a questa pagina, 
                 così continuano a funzionare anche i bottoni avanti indietro, 
                 correttamente 
             */
             currentPage = selectedPage; 
+            console.log(currentPage); 
             
             removePreviousResearch();
             renderTheLoadingIcon(); 
@@ -68,15 +68,10 @@ $(document).ready(function() {
 
     $(document).on('click', '.item', function( ) {
 
-        // recupera il cast sia per i movie che per le serie Tv 
         var currentItemID = $(this).attr('data-itemid'); 
         var currentItemType = $(this).attr('data-itemtype'); 
 
         getAllItemInfo( currentItemID, currentItemType ); 
-
-        // come fare a mettere il tutto nella modal window??? 
-
-        // getGenresOfTheItem( currentItemID, currentItemType ); 
 
     }); 
 
@@ -216,7 +211,7 @@ function getAllItemsInOneArray( query, page, array ) {
                     if ( data.results[ j ].poster_path != null ) {
                         array.push( data.results[ j ] ); 
                     }
-                }
+                } 
                 j++; 
             }
         } 
@@ -425,40 +420,8 @@ function getAllItemInfo( ID, type ) {
         success: function( data ) { 
 
             var cast = createArrayWithCast( data ); 
-
             manageItemInfos( data, type, cast ); 
-
-            console.log(cast); 
-
-            getGenresOfTheItem( ID, type ); 
-
     
-        }
-    });
-} 
-
-
-/* --------------------------- */
-/* ------ VI milestone ------ */
-/* ------------------------- */
-
-function getGenresOfTheItem( ID, type ) {
-    var chiave = '1c72c8fa9e2142b6517ecec927e56964';  
-    $.ajax({
-        url: 'https://api.themoviedb.org/3/' + type + '/' + ID + '?api_key=' + chiave + '&language=it-IT', 
-        method: 'GET', 
-
-        success: function( data ) { 
-
-
-            // qua fare solo un altro handlebar template per il cast, da attaccare a quello sopra, visto che è garantito l'arrivo dei dati dopo il primo ( quando il primo e gia creato )
-            console.log(data); 
-
-            var generi = [];
-            for ( var i = 0; i < data.genres.length; i++ ) {
-                generi.push( data.genres[ i ].name );
-            } 
-            console.log(generi); 
         }
     });
 } 
@@ -497,7 +460,6 @@ function manageItemInfos( object, type, castArray ) {
 
     source = $("#single-item-template").html();
     item = Handlebars.compile(source); 
-    console.log(castArray); 
     parameters = {
         titolo: titleName,
         titoloOriginale: originalTitleName, 
@@ -528,15 +490,17 @@ function genresRender( array ) {
 }
 
 function castRender( array ) {
+    var image = 'img/other/user.png'; 
     var stringa = ''; 
     var i = 0;
-    var pathToImg = 'https://image.tmdb.org/t/p/w45';
     if ( array.length > 0 ) {
         while ( i < array.length ) {
-            stringa += '<div class="itemPopup__cast-member"><img class="itemPopup__cast-member--photo" src="' + pathToImg + array[ i ].profile_path + '"><span class="itemPopup__cast-member--name">' + array[ i ].name + '</span></div>'; 
+            if ( array[ i ].profile_path != null ) {
+                image = 'https://image.tmdb.org/t/p/w45' + array[ i ].profile_path;
+            }
+            stringa += '<div class="itemPopup__cast-member"><img class="itemPopup__cast-member--photo" src="' + image + '"><span class="itemPopup__cast-member--name">' + array[ i ].name + '</span></div>'; 
             i++;
         }
     }
-    console.log(stringa); 
     return stringa; 
 } 
