@@ -195,7 +195,6 @@ body {
     line-height: 1.2; 
     letter-spacing: 1px; 
     text-transform: uppercase; 
-    margin-bottom: 3rem; 
 }
 
 .item__details--flex-wrapper {
@@ -233,20 +232,27 @@ body {
     font-size: 2rem; 
     line-height: .8; 
     color: #ddd; 
-    margin-top: 1rem; 
     text-transform: uppercase; 
     background-color: black; 
     border: 1px solid white; 
     padding: 1rem; 
+    margin: 3rem 0; 
 }
 
 .item__stars { 
-    display: inline-block; 
-    margin-top: 2rem; 
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    background-color: black; 
+    padding: .5rem; 
+
+    position: absolute; 
+    bottom: 0; 
 }
 
 .item__stars i { 
-    font-size: 1.5rem; 
+    font-size: 1.3rem; 
     color: #ee0; 
     cursor: pointer; 
 }
@@ -259,6 +265,15 @@ body {
     display: block; 
     width: 5rem; 
     text-align: center; 
+}
+
+.item__popup-opener {
+    cursor: pointer; 
+    padding: .3rem 2rem; 
+    text-transform: uppercase;
+    font-size: 1.3rem; 
+    background-color: darkred; 
+    color: white; 
 }
 
 /* ---------------------- */

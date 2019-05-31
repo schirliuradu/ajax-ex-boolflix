@@ -66,10 +66,10 @@ $(document).ready(function() {
     });
 
 
-    $(document).on('click', '.item', function( ) {
-
-        var currentItemID = $(this).attr('data-itemid'); 
-        var currentItemType = $(this).attr('data-itemtype'); 
+    $(document).on('click', '.item__popup-opener', function( ) {
+        console.log('clickato'); 
+        var currentItemID = $(this).closest('.item').attr('data-itemid'); 
+        var currentItemType = $(this).closest('.item').attr('data-itemtype'); 
 
         getAllItemInfo( currentItemID, currentItemType ); 
 
@@ -177,7 +177,7 @@ function getItems( q, currentP ) {
             setTimeout (function() {
                 deleteTheLoadingIcon(); 
                 manageQueriedItems( splitArrayInParts( array ), currentP ); 
-            }, 600); 
+            }, 500); 
     
         }, 
         error: function( error ) { 
@@ -418,10 +418,8 @@ function getAllItemInfo( ID, type ) {
         method: 'GET', 
 
         success: function( data ) { 
-
             var cast = createArrayWithCast( data ); 
             manageItemInfos( data, type, cast ); 
-    
         }
     });
 } 

@@ -38,24 +38,19 @@
     <script id="item-template" type="text/x-handlebars-template"> 
 
         <div class="item" data-itemid="{{itemID}}" data-itemtype="{{itemType}}">
-            <div class="item__side item__side--frontFace" style="background-image: url({{imagePath}})"></div>        
+            <div class="item__side item__side--frontFace" style="background-image: url({{imagePath}})">
+                <span class="item__stars">{{{rating}}}</span>
+            </div>        
             <div class="item__side item__side--backFace">
                 <div class="item__details--flex-wrapper">
                     <span class="item__type">{{type}}</span>
                     <h2 class="item__title"> {{ title }} </h2>        
                     <div class="item__property">
-                        <span>Original title: </span> 
-                        <span class="item__property--value"> {{originalTitle}} </span>                
-                    </div>
-                    <div class="item__property">
-                        <span>Original language: </span>
                         <span class="item__property--value-flag"> {{{originalLanguage}}} </span>
                     </div>
-                    <div class="item__property">
-                        <span class="item__stars">{{{rating}}}</span>
-                    </div>
+                    <button class="btn item__popup-opener">scheda</button>
                 </div>
-            </div>
+            </div> 
         </div>
 
     </script>
@@ -82,9 +77,7 @@
 
                     <div class="itemPopup__upside">
                         <div class="itemPopup__leftside" style="background-image: url({{imageUrl}})"></div>
-
                         <div class="itemPopup__rightside">
-
                             <div class="itemPopup__cast-container">
                                 {{{casting}}}
                             </div>
@@ -98,35 +91,18 @@
                                 <div class="itemPopup__rating">
                                     <span class="itemPopup__stars">
                                         {{{ stelle }}}
-                                    </span>
+                                    </span> 
                                 </div>
                             </div>
                         </div>
                     </div>
+
                     <div class="itemPopup__downside">
                         <span class="itemPopup__orlang">{{{ linguaOriginale }}}</span>
-
                         {{{ generi }}}
                     </div>
                 </div>
             </div>
-        </div>
-    </script>
-
-
-    <script id="single-item-template" type="text/x-handlebars-template"> 
-
-        <div class="itemPopup__cast-member">
-            <img class="itemPopup__cast-member--photo" src="{{profileImgPath}}">
-            <span class="itemPopup__cast-member--name"> {{ name }} </span>
-        </div>
-        <div class="itemPopup__cast-member">
-            <img class="itemPopup__cast-member--photo" src="">
-            <span class="itemPopup__cast-member--name">Brad Pitt</span>
-        </div>
-        <div class="itemPopup__cast-member">
-            <img class="itemPopup__cast-member--photo" src="">
-            <span class="itemPopup__cast-member--name">Brad Pitt</span>
         </div>
     </script>
 
