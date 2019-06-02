@@ -39,6 +39,7 @@ var dataController = function() {
                 } 
             });     
         }, 
+
     
         getAllItemsInOneArray: function( q, i, array ) {
             $.ajax({ 

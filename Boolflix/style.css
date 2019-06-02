@@ -29,11 +29,11 @@ body {
     background-image: url('img/sfondo-header.svg'); 
     background-size: cover;
     background-repeat: no-repeat;
-    background-position: top; 
-    padding: 2rem 4rem 7.5rem 4rem; 
+    background-position: bottom; 
+    padding: 2rem 4rem 8rem 4rem; 
     color: white; 
     font-size: 1.8rem; 
-    height: 20rem; 
+    height: 18rem; 
 }
 
 .header__left {
@@ -64,7 +64,9 @@ body {
     font-size: 1.5rem; 
     border-radius: 10rem; 
     transition: transform .5s; 
+
     transition: width .3s; 
+    transition-delay: .2s; 
 }
 
 .header__input:focus {
@@ -86,11 +88,14 @@ body {
     letter-spacing: 1px;  
     text-transform: uppercase; 
     cursor: pointer; 
+
     visibility: hidden; 
+
     opacity: 0; 
 
     margin-left: -8.8rem; 
-    transition: opacity .3s; 
+    transition: opacity .5s, visibility 0s; 
+    transition-delay: .1s; 
 }
 
 .btn {
@@ -99,13 +104,11 @@ body {
 }
 
 .content { 
-    min-height: calc(100vh - 33rem); 
+    min-height: calc(100vh - 28rem); 
     max-width: 120rem;
     margin: auto; 
     padding: 6rem 1rem; 
 }
-
-
 
 /* aux classes */
 
@@ -130,7 +133,7 @@ body {
     background-image: url('img/sfondo-footer.svg'); 
     background-size: cover;
     background-repeat: no-repeat;
-    background-position: bottom; 
+    background-position: top; 
     color: #bbb; 
     font-size: 2rem; 
     padding: 2rem;
@@ -138,11 +141,11 @@ body {
     display: flex; 
     align-items: center; 
     justify-content: center; 
-    height: 13rem; 
+    height: 10rem; 
 }
 
 .footer__copy {
-    padding: 1.5rem 2rem 2rem; 
+    padding: 4rem 1rem 1rem; 
 }
 
 /* ---------------------- */
@@ -618,15 +621,144 @@ body {
 .itemPopup__cast-member--name {
     font-size: 1.2rem; 
     text-transform: uppercase; 
+    text-align: center; 
 }
 
 
 /* media query */
 
+@media only screen and (max-width: 970px) { 
+
+    .itemPopup {
+        width: 95%;
+        height: 95%; 
+    }
+    
+    .itemPopup__upside {
+        display: flex; 
+        flex-direction: column; 
+    }
+    
+    .itemPopup__leftside {
+        width: 20rem;
+        height: 35rem; 
+        margin: 1rem 0; 
+    }
+    
+    .itemPopup__rightside {
+        width: 100%; 
+        height: calc(100% - 30rem); 
+    }
+    
+    .itemPopup__closing-x {
+        font-size: 2.5rem; 
+        top: 4rem; 
+        right: 4.5rem; 
+    }
+    
+    .itemPopup__genre {
+        padding: .5rem 1rem; 
+        font-size: 1.4rem;
+        font-weight: 300; 
+    }
+
+    .itemPopup__rating {
+        transform: rotate(0deg); 
+        top: -3rem; 
+        right: 1rem;
+        z-index: 11; 
+    }
+    
+    .itemPopup__stars i {
+        font-size: 1.5rem; 
+        transform: rotate(0deg); 
+    }
+    
+    .itemPopup__orlang {
+        padding: .5rem; 
+        bottom: 2.5rem;
+    }
+    
+    .itemPopup__cast-container {
+        height: auto;
+        max-height: 12rem; 
+        margin-bottom: 1rem; 
+    }
+    
+    .itemPopup__info {
+        height: calc(100% - 12rem);
+        padding: 1rem; 
+        line-height: 1.4; 
+    }
+        
+    .itemPopup__info span {
+        display: block; 
+    }
+    
+    .itemPopup__property {
+        font-weight: 600; 
+        letter-spacing: 1px; 
+        margin-bottom: .5rem; 
+    }
+    
+    .itemPopup__cast-member--photo {
+        width: 5rem; 
+        height: auto; 
+        border-radius: .4rem; 
+        margin-bottom: .5rem; 
+    }
+    
+    .itemPopup__cast-member--name {
+        font-size: 1rem; 
+    }
+}
+
 @media only screen and (max-width: 768px) { 
 
     html {
         font-size: 50%;     /* 1rem = 8px */
+    }
+
+    .itemPopup__leftside {
+        width: 17rem;
+        height: 25rem; 
+        margin: 1rem 0 3.5rem; 
+    }
+
+    .itemPopup__ortitle {
+        margin-bottom: 1rem; 
+    }
+
+    .itemPopup__title {
+        font-size: 1.5rem;
+        margin: 1.2rem 0; 
+    }
+
+    .itemPopup__rating {
+        top: -3rem; 
+        right: 50%;
+        transform: translateX(50%); 
+        z-index: 11; 
+    }
+        
+    .itemPopup__info {
+        height: calc(100% - 15rem);
+    }
+
+    .itemPopup__orlang {
+        padding: .5rem; 
+        bottom: 3rem;
+    }
+
+    .item__flag-img { 
+        display: block; 
+        width: 3rem; 
+        text-align: center; 
+    }
+
+    .itemPopup__closing-x {
+        top: 4.5rem;
+        right: 3.5rem;
     }
 
 }
